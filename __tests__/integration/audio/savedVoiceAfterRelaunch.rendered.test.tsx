@@ -154,5 +154,11 @@ describe('the saved voice survives a relaunch', () => {
     await rtl.waitFor(() => expect(view.getByRole('button', { name: 'Michael', selected: true })).toBeTruthy());
     expect(view.queryByRole('button', { name: 'Heart', selected: true })).toBeNull();
     expect(view.getByRole('button', { name: 'Heart' })).toBeTruthy();
+
+    // Pro starts sync on this launch too. Let that start finish before the suite ends, so none of it
+    // runs after the test environment is torn down.
+    const { useSyncStore } = require('../../../pro/sync/syncStore');
+    await rtl.waitFor(() => expect(useSyncStore.getState().status).not.toBe('starting'), { timeout: 8000 });
+    view.unmount();
   });
 });
